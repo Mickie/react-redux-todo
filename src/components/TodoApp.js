@@ -21,10 +21,10 @@ const initStore = {
 //action Creator
 
 const ACTIONS = {
-    ADD_TO_DO(){
+    ADD_TO_DO(txt){
         return {
             type: 'add_to_do',
-            text: 'more shopping'
+            text: txt
         }
     },
     TOGGLE_TO_DO(idx){
@@ -34,7 +34,6 @@ const ACTIONS = {
         }
     },
     DEL_TO_DO(idx){
-        console.log("del dispatched");
         return {
             type: 'del_to_do',
             idx: idx
@@ -60,7 +59,7 @@ const todoReducers = (state = [initStore], action) => {
                 if (action.idx == index) {
                     return {
                         ...s,
-                        completed: !s.complete
+                        completed: !s.completed
                     }
                 } else {
                     return s;
@@ -85,21 +84,6 @@ todoStore.subscribe(() => {
 });
 
 //ui components
-class TodoList extends React.Component {
-    render() {
-        return (
-            <ul>
-                {this.props.todos.map((todo, i) =>
-                    <li key={i}>
-                        {todo.text}
-                        <MyButton onButtonClick={() => this.props.delTodo(i)}
-                                  buttonName="del"/>
-                    </li>
-                )}
-            </ul>
-        );
-    }
-}
 
 class MyButton extends React.Component {
     render() {
@@ -110,14 +94,38 @@ class MyButton extends React.Component {
     }
 }
 
+class TodoList extends React.Component {
+    render() {
+        const textColor = (completed) => {
+            return completed ? {textDecoration: 'line-through'} : {textDecoration: 'none'}
+        };
+        return (
+            <ul>
+                {this.props.todos.map((todo, i) =>
+                    <li key={i}>
+                        <span style={textColor(todo.completed)}>{todo.text}</span>
+                        <MyButton onButtonClick={() => this.props.delTodo(i)}
+                                  buttonName="del"/>
+                        <MyButton onButtonClick={() => this.props.toggleTodo(i)}
+                                  buttonName="toggle"/>
+                    </li>
+                )}
+            </ul>
+        );
+    }
+}
+
 class HandleTodo extends React.Component {
     render() {
-        const {todos, addTodo, delTodo}=this.props;
+        const {todos, addTodo, delTodo, toggleTodo}=this.props;
         return (
             <div>
-                <input placeholder="todo name..."/>
-                <TodoList todos={todos} delTodo={delTodo}/>
-                <button onClick={addTodo}>addToDo</button>
+                <input placeholder="todo name..." ref={(input) => {
+                    this.textinput = input;
+                }}/>
+                <TodoList {...this.props} />
+                <MyButton onButtonClick={() => addTodo(this.textinput.value)}
+                          buttonName="add"/>
             </div>
         )
     }
@@ -134,8 +142,9 @@ const mapStoreToProps = (store) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addTodo: () => dispatch(ACTIONS.ADD_TO_DO()),
-        delTodo: bindActionCreators(ACTIONS.DEL_TO_DO, dispatch)
+        addTodo: bindActionCreators(ACTIONS.ADD_TO_DO, dispatch),
+        delTodo: bindActionCreators(ACTIONS.DEL_TO_DO, dispatch),
+        toggleTodo: bindActionCreators(ACTIONS.TOGGLE_TO_DO, dispatch)
     }
 };
 
