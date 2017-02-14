@@ -1,15 +1,13 @@
 import React from 'react';
-import { createStore, bindActionCreators } from 'redux';
+import { createStore, bindActionCreators, combineReducers } from 'redux';
 import { connect, Provider } from 'react-redux';
 /*
  store tree
-
 
  [{
  text: 'todo',
  completed: false
  },{}]
-
 
  */
 
@@ -38,12 +36,18 @@ const ACTIONS = {
             type: 'del_to_do',
             idx: idx
         }
+    },
+    SELECT_TO_DO(stats){
+        return {
+            type: 'select_to_do',
+            stats
+        }
     }
 };
 
 //reducer
 
-const todoReducers = (state = [initStore], action) => {
+const todoReducer = (state = [initStore], action) => {
     switch (action.type) {
         case "add_to_do":
             return [
@@ -75,13 +79,26 @@ const todoReducers = (state = [initStore], action) => {
     }
 };
 
-//store
-let todoStore = createStore(todoReducers);
+const todoFilter = (state = "show_all", action) => {
+    switch (action.type) {
+        case "select_to_do":
+            return action.stats;
+            break;
+        default:
+            return state;
+            break;
+    }
+};
 
-//for test purpose
-todoStore.subscribe(() => {
-    console.log(todoStore.getState());
+const rootReducer = combineReducers({
+    todos: todoReducer,
+    filter: todoFilter
 });
+
+//store
+
+let todoStore = createStore(rootReducer);
+
 
 //ui components
 
@@ -117,7 +134,11 @@ class TodoList extends React.Component {
 
 class HandleTodo extends React.Component {
     render() {
-        const {todos, addTodo, delTodo, toggleTodo}=this.props;
+        const {todos, addTodo, delTodo, toggleTodo, selectTodo}=this.props;
+        const aStyle = {
+            color: 'blue',
+            textDecoration: 'underline'
+        };
         return (
             <div>
                 <input placeholder="todo name..." ref={(input) => {
@@ -126,6 +147,8 @@ class HandleTodo extends React.Component {
                 <TodoList {...this.props} />
                 <MyButton onButtonClick={() => addTodo(this.textinput.value)}
                           buttonName="add"/>
+                <a style={aStyle} onClick={() => selectTodo("show_all")}>select all</a> &nbsp;&nbsp;
+                <a style={aStyle} onClick={() => selectTodo("show_completed")}>select completed</a>
             </div>
         )
     }
@@ -134,9 +157,24 @@ class HandleTodo extends React.Component {
 /* connect redux store to react components
 
  */
+
+const visibleTodos = (todos, filter) => {
+    switch (filter) {
+        case "show_completed":
+            return todos.filter((t) => t.completed);
+            break;
+        case "show_incompleted":
+            return todos.filter((t) => !t.completed);
+            break;
+        default:
+            return todos;
+            break;
+    }
+};
+
 const mapStoreToProps = (store) => {
     return {
-        todos: store
+        todos: visibleTodos(store.todos, store.filter)
     }
 };
 
@@ -144,7 +182,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         addTodo: bindActionCreators(ACTIONS.ADD_TO_DO, dispatch),
         delTodo: bindActionCreators(ACTIONS.DEL_TO_DO, dispatch),
-        toggleTodo: bindActionCreators(ACTIONS.TOGGLE_TO_DO, dispatch)
+        toggleTodo: bindActionCreators(ACTIONS.TOGGLE_TO_DO, dispatch),
+        selectTodo: bindActionCreators(ACTIONS.SELECT_TO_DO, dispatch)
     }
 };
 
