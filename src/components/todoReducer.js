@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { ADD_TO_DO, TOGGLE_TO_DO, DEL_TO_DO, SELECT_TO_DO } from './todoAction';
+import { ADD_TO_DO, TOGGLE_TO_DO, DEL_TO_DO, SELECT_TO_DO, FETCH_TO_DO } from './todoAction';
 
 
 const initStore = {
@@ -7,7 +7,7 @@ const initStore = {
     completed: false
 };
 
-const todoReducer = (state = [initStore], action) => {
+const todoReducer = (state = [], action) => {
     switch (action.type) {
         case ADD_TO_DO:
             return [
@@ -32,6 +32,13 @@ const todoReducer = (state = [initStore], action) => {
             break;
         case DEL_TO_DO:
             return state.filter((s, index) => action.idx != index);
+            break;
+
+        case FETCH_TO_DO:
+            return [
+                ...state,
+                ...action.todos
+            ];
             break;
         default:
             return state;

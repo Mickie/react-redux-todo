@@ -4,10 +4,13 @@ import { connect, Provider } from 'react-redux';
 import MyButton  from './MyButton';
 import TodoList  from './TodoList';
 import  todoStore  from './todoStore';
-import { sendAddTodoRequest, sendToggleTodoRequest, sendDelTodoRequest, selectTodo } from './todoAction';
+import { sendAddTodoRequest, sendToggleTodoRequest, sendDelTodoRequest, selectTodo, sendGetTodoRequest } from './todoAction';
 
 
 class HandleTodo extends React.Component {
+    componentDidMount(){
+       this.props.getTodo();
+    }
     render() {
         const aStyle = {
             color: 'blue',
@@ -65,6 +68,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         selectTodo: (stats) => {
             dispatch(selectTodo(stats))
+        },
+        getTodo: ()=>{
+            dispatch(sendGetTodoRequest())
         }
     }
 };

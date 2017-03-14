@@ -33,7 +33,10 @@ export function requestGetTodo(){
     loading();
     return new Promise((resolve, reject) => {
         setTimeout(function () {
-            resolve();
+            let res = {
+                todos: [{text:'buy cosmestics',completed:true},{text:'buy buy buy',completed:false}]
+            };
+            resolve(res);
             hideLoading();
         }, 1000)
     })
