@@ -1,12 +1,6 @@
 import { combineReducers } from 'redux';
 import { ADD_TO_DO, TOGGLE_TO_DO, DEL_TO_DO, SELECT_TO_DO, FETCH_TO_DO } from './todoAction';
 
-
-const initStore = {
-    text: 'shopping',
-    completed: false
-};
-
 const todoReducer = (state = [], action) => {
     switch (action.type) {
         case ADD_TO_DO:
@@ -56,7 +50,6 @@ const todoFilter = (state = "show_all", action) => {
             break;
     }
 };
-
 
 const rootReducer = combineReducers({
     todos: todoReducer,

@@ -12,7 +12,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/app';
+import { Button } from 'antd';
 
-
-ReactDOM.render(<App />, document.getElementById('root'));
-
+//ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+    <div>
+        <Button>Default</Button>
+        <App />
+    </div>
+,document.getElementById('root'));
