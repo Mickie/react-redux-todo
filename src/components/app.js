@@ -1,28 +1,41 @@
 import React from 'react';
-import bindActionCreators from 'redux';
 import { connect, Provider } from 'react-redux';
 import MyButton  from './MyButton';
 import TodoList  from './TodoList';
 import  todoStore  from './todoStore';
-import { sendAddTodoRequest, sendToggleTodoRequest, sendDelTodoRequest, selectTodo, sendGetTodoRequest } from './todoAction';
-
+import {
+    sendAddTodoRequest,
+    sendToggleTodoRequest,
+    sendDelTodoRequest,
+    selectTodo,
+    sendGetTodoRequest
+} from './todoAction';
+import { Input } from 'antd';
 
 class HandleTodo extends React.Component {
-    componentDidMount(){
-       this.props.getTodo();
+    constructor(props) {
+        super(props);
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
+
+    handleInputChange(e) {
+        this.setState({value: e.target.value})
+    }
+
+    componentDidMount() {
+        this.props.getTodo();
+    }
+
     render() {
         const aStyle = {
             color: 'blue',
             textDecoration: 'underline'
         };
         return (
-            <div>
-                <input placeholder="todo name..." ref={(input) => {
-                    this.textinput = input;
-                }}/>
+            <div className="container">
+                <Input placeholder="todo name..." onChange={this.handleInputChange}/>
                 <TodoList {...this.props} />
-                <MyButton onButtonClick={() => this.props.addTodo(this.textinput.value)}
+                <MyButton size="large" type="primary" onButtonClick={() => this.props.addTodo(this.state.value)}
                           buttonName="add"/>
                 <a style={aStyle} onClick={() => this.props.selectTodo("show_all")}>select all</a> &nbsp;&nbsp;
                 <a style={aStyle} onClick={() => this.props.selectTodo("show_completed")}>select completed</a>
@@ -69,12 +82,11 @@ const mapDispatchToProps = (dispatch) => {
         selectTodo: (stats) => {
             dispatch(selectTodo(stats))
         },
-        getTodo: ()=>{
+        getTodo: () => {
             dispatch(sendGetTodoRequest())
         }
     }
 };
-
 
 const TodoApp = connect(mapStoreToProps, mapDispatchToProps)(HandleTodo);
 

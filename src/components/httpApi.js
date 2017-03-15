@@ -1,4 +1,8 @@
 //import fetch from 'isomorphic-fetch';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { RequestLoading } from './RequestLoading';
+
 export function requestAddTodo(txt){
     loading();
     return new Promise((resolve, reject) => {
@@ -43,19 +47,15 @@ export function requestGetTodo(){
 }
 
 const loading = () =>{
+    let container = document.querySelector(".container");
     let div = document.createElement("div");
-    div.style.width = "300px";
-    div.style.height = "150px";
-    div.style.position="absolute";
-    div.style.top = 0;
-    div.style.left = 0;
-    div.style.backgroundColor = "rgba(255,255,255,.5)";
-    div.className = "loading";
-    div.innerHTML="<p style='margin-top: 62px;text-align: center;'>loading...</p>";
-    document.body.appendChild(div);
+    div.className = "loading-div";
+    ReactDOM.render(<RequestLoading/>,div);
+    container.appendChild(div);
 };
 
 const hideLoading = ()=>{
-    let div = document.querySelector(".loading");
-    document.body.removeChild(div);
+    let container = document.querySelector(".container");
+    let div = document.querySelector(".loading-div");
+    container.removeChild(div);
 };
